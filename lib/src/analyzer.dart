@@ -27,6 +27,7 @@ const Set<String> placeholderSymbolDiagnosticCodes = {
   'undefined_annotation',
   'non_type_as_type_argument',
   'uri_does_not_exist',
+  'uri_does_not_exist_in_doc_import',
   'creation_with_non_type',
   'extends_non_class',
   'duplicate_import',
