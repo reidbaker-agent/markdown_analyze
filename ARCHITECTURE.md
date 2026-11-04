@@ -24,7 +24,8 @@ Markdown Files (.md)
   │       using `parseString` with Dart 3.12+ experiments (`primary-constructors`,
   │       `dot-shorthands`, `enhanced-parts`).
   │     • Strict pass runs first; if syntax fails and `allowEllipsis: true`, retries
-  │       after replacing documentation ellipsis idioms (`=> ...;`, `{ ... }`, `(...)`).
+  │       after replacing documentation ellipsis idioms (`class Foo { ... }` -> `{}`,
+  │       `=> ...;`, `{ ... }`, `(...)`, and closing truncated class bodies).
   │     • Splits single blocks containing both `// Bad` and `// Good` (or `// Before`
   │       and `// After`) into independent sub-snippets (`splitContrastSubSnippets`)
   │       so redefined classes/functions do not self-shadow.

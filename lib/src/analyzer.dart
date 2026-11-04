@@ -30,6 +30,7 @@ const Set<String> placeholderSymbolDiagnosticCodes = {
   'uri_does_not_exist_in_doc_import',
   'creation_with_non_type',
   'extends_non_class',
+  'initializing_formal_for_non_existent_field',
   'duplicate_import',
   'body_might_complete_normally_nullable',
 };

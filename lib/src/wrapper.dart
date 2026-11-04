@@ -43,15 +43,31 @@ FeatureSet buildSnippetFeatureSet({
 }
 
 /// Replaces common documentation ellipsis idioms (`=> ...;`, `{ ... }`, `(...)`,
-/// standalone `...` lines) with valid Dart placeholders.
+/// standalone `...` lines, or truncated class declarations ending after `;`)
+/// with valid Dart placeholders.
 String sanitizeSnippetEllipsis(String code) {
-  return code
+  var sanitized = code
+      .replaceAllMapped(
+        RegExp(
+          r'\b((?:class|mixin|enum|extension)\s+[^{]+)\{\s*\.\.\.\s*\}',
+          multiLine: true,
+        ),
+        (m) => '${m.group(1)}{}',
+      )
       .replaceAll('=> ...;', '=> throw UnimplementedError();')
       .replaceAll('{ ... }', '{ throw UnimplementedError(); }')
       .replaceAll('{...}', '{ throw UnimplementedError(); }')
       .replaceAll('(it) => ...)', '(it) {})')
       .replaceAll('(...)', '()')
       .replaceAll(RegExp(r'^\s*\.\.\.\s*$', multiLine: true), '// ...');
+
+  final openBraces = '{'.allMatches(sanitized).length;
+  final closeBraces = '}'.allMatches(sanitized).length;
+  if (openBraces > closeBraces && sanitized.trimRight().endsWith(';')) {
+    final missing = '}' * (openBraces - closeBraces);
+    sanitized = '$sanitized\n$missing';
+  }
+  return sanitized;
 }
 
 /// Attempts to parse [rawCode] across candidate wrapping templates (`unit`,

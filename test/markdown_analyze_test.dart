@@ -71,6 +71,44 @@ class DatabaseService {
         expect(chunks, hasLength(2));
       },
     );
+
+    test(
+      'tolerates class-body { ... } ellipsis and truncated class constructor snippets',
+      () async {
+        final tempDir = Directory.systemTemp.createTempSync(
+          'md_ellipsis_class_',
+        );
+        try {
+          final mdFile = File(p.join(tempDir.path, 'dart.md'))
+            ..writeAsStringSync('''
+```dart
+@Deprecated('Use PurchaseButtonV2 instead')
+class PurchaseButton extends StatelessWidget { ... }
+```
+
+```dart
+class FlightPath extends StatelessWidget {
+  const FlightPath({required this.coordinates, super.key});
+```
+''');
+          final analyzer = MarkdownDartAnalyzer(
+            config: MarkdownAnalyzeConfig(
+              fallbackPackageConfigPath: fallbackConfigPath,
+            ),
+          );
+          final res = await analyzer.analyzeFiles(
+            contextRoot: tempDir.path,
+            markdownRoot: tempDir.path,
+            markdownFiles: [mdFile],
+          );
+          expect(res.diagnostics, isEmpty);
+        } finally {
+          if (tempDir.existsSync()) {
+            tempDir.deleteSync(recursive: true);
+          }
+        }
+      },
+    );
   });
 
   group('Consumer-Configurable Severities & Sample Defaults', () {
